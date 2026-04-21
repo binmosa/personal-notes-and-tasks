@@ -22,6 +22,7 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState("tasks");
 
   const completedCount = useMemo(
     () => tasks.filter((task) => task.completed).length,
@@ -93,7 +94,7 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
     <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-8">
       <Card className="mb-6">
         <CardHeader className="gap-2">
-          <CardTitle className="text-2xl">إدارة المهام والملاحظات الشخصية</CardTitle>
+          <CardTitle className="text-2xl">تطبيقي مهامي</CardTitle>
           <p className="text-sm text-muted-foreground">
             تطبيق بسيط باستخدام Next.js و shadcn/ui مع تخزين البيانات داخل ملف JSON.
           </p>
@@ -105,7 +106,16 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
         </CardContent>
       </Card>
 
-      <Tabs defaultValue="tasks" className="space-y-4">
+      <nav className="mb-4 flex items-center gap-2 rounded-md border bg-card p-2">
+        <Button variant={activeTab === "tasks" ? "default" : "ghost"} onClick={() => setActiveTab("tasks")}>
+          الرئيسية - المهام
+        </Button>
+        <Button variant={activeTab === "notes" ? "default" : "ghost"} onClick={() => setActiveTab("notes")}>
+          الملاحظات
+        </Button>
+      </nav>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="tasks">المهام</TabsTrigger>
           <TabsTrigger value="notes">الملاحظات</TabsTrigger>
