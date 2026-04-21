@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "مدير المهام والملاحظات",
-  description: "تطبيق بسيط لإدارة المهام والملاحظات الشخصية",
+  title: "تطبيقي مهامي",
+  description: "تطبيقي مهامي لإدارة المهام والملاحظات الشخصية",
 };
 
 export default function RootLayout({
