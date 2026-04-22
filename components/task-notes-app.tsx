@@ -2,13 +2,18 @@
 
 import { FormEvent, useMemo, useState } from "react";
 import type { NoteItem, TaskItem } from "@/lib/store";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { 
+  CheckCircle2, 
+  ClipboardList, 
+  FileText, 
+  Clock 
+} from "lucide-react";
 
 type Props = {
   initialTasks: TaskItem[];
@@ -28,6 +33,13 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
     () => tasks.filter((task) => task.completed).length,
     [tasks],
   );
+
+  const completionPercentage = useMemo(() => {
+    if (tasks.length === 0) return 0;
+    return Math.round((completedCount / tasks.length) * 100);
+  }, [tasks.length, completedCount]);
+
+  const pendingTasks = tasks.length - completedCount;
 
   async function refreshData() {
     const response = await fetch("/api/data", { cache: "no-store" });
@@ -91,20 +103,75 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-8">
-      <Card className="mb-6">
-        <CardHeader className="gap-2">
-          <CardTitle className="text-2xl">تطبيقي مهامي</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            تطبيق بسيط باستخدام Next.js و shadcn/ui مع تخزين البيانات داخل ملف JSON.
-          </p>
-        </CardHeader>
-        <CardContent className="flex flex-wrap items-center gap-3">
-          <Badge variant="secondary">إجمالي المهام: {tasks.length}</Badge>
-          <Badge variant="secondary">المهام المنجزة: {completedCount}</Badge>
-          <Badge variant="secondary">الملاحظات: {notes.length}</Badge>
-        </CardContent>
-      </Card>
+    <div className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 md:px-8">
+      {/* Header Section */}
+      <div className="mb-8 flex flex-col gap-2">
+        <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl">لوحة التحكم الخاصة بي</h1>
+        <p className="text-muted-foreground">
+          نظرة عامة على إنتاجيتك اليوم. تتبع مهامك وملاحظاتك في مكان واحد.
+        </p>
+      </div>
+
+      {/* Statistics Section */}
+      <div className="grid grid-cols-1 gap-4 mb-8 sm:grid-cols-2 lg:grid-cols-4">
+        <Card className="overflow-hidden border-none bg-gradient-to-br from-blue-500/10 to-blue-600/5 shadow-sm ring-1 ring-blue-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium text-blue-600 dark:text-blue-400">إجمالي المهام</p>
+              <ClipboardList className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className="text-2xl font-bold">{tasks.length}</div>
+              <span className="text-xs text-muted-foreground">مهمة</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden border-none bg-gradient-to-br from-green-500/10 to-green-600/5 shadow-sm ring-1 ring-green-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">المهام المكتملة</p>
+              <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className="text-2xl font-bold">{completedCount}</div>
+              <span className="text-xs text-muted-foreground">تم إنجازها</span>
+            </div>
+            <div className="mt-4 h-1.5 w-full rounded-full bg-green-200 dark:bg-green-900/40">
+              <div 
+                className="h-1.5 rounded-full bg-green-500 transition-all duration-500" 
+                style={{ width: `${completionPercentage}%` }}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden border-none bg-gradient-to-br from-amber-500/10 to-amber-600/5 shadow-sm ring-1 ring-amber-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium text-amber-600 dark:text-amber-400">مهام منتظرة</p>
+              <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className="text-2xl font-bold">{pendingTasks}</div>
+              <span className="text-xs text-muted-foreground">قيد العمل</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="overflow-hidden border-none bg-gradient-to-br from-purple-500/10 to-purple-600/5 shadow-sm ring-1 ring-purple-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between space-y-0 pb-2">
+              <p className="text-sm font-medium text-purple-600 dark:text-purple-400">الملاحظات</p>
+              <FileText className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div className="flex items-baseline gap-2">
+              <div className="text-2xl font-bold">{notes.length}</div>
+              <span className="text-xs text-muted-foreground">ملاحظة محفوظة</span>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       <nav className="mb-4 flex items-center gap-2 rounded-md border bg-card p-2">
         <Button variant={activeTab === "tasks" ? "default" : "ghost"} onClick={() => setActiveTab("tasks")}>
