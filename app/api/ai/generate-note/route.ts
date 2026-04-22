@@ -17,8 +17,8 @@ export async function POST(req: Request) {
       );
     }
 
-    // Google Gemini API endpoint
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`;
+    // Google Gemini API endpoint (Updated to 2.5 Flash for 2026 compatibility)
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(url, {
       method: "POST",
