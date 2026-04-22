@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckSquare, Github, Twitter, Instagram } from "lucide-react";
+import { CheckSquare, Send, Code2, Camera } from "lucide-react";
 
 export function Footer() {
   return (
@@ -42,13 +42,13 @@ export function Footer() {
             <h3 className="text-sm font-semibold mb-4">تواصل معنا</h3>
             <div className="flex gap-4">
               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Twitter className="h-5 w-5" />
+                <Send className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Instagram className="h-5 w-5" />
+                <Camera className="h-5 w-5" />
               </Link>
               <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                <Github className="h-5 w-5" />
+                <Code2 className="h-5 w-5" />
               </Link>
             </div>
           </div>
