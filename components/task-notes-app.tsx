@@ -269,37 +269,46 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
 
         <TabsContent value="notes">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+            <CardHeader>
               <CardTitle>إضافة ملاحظة جديدة</CardTitle>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="gap-2 text-purple-600 border-purple-200 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-400"
-                onClick={generateWithAI}
-                disabled={aiLoading}
-              >
-                {aiLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Sparkles className="h-4 w-4" />
-                )}
-                كتابة بالذكاء الاصطناعي
-              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              <form onSubmit={createNote} className="space-y-3">
+              <form onSubmit={createNote} className="space-y-4">
                 <Input
                   value={noteTitle}
                   onChange={(event) => setNoteTitle(event.target.value)}
                   placeholder="عنوان الملاحظة"
+                  className="text-lg font-medium"
                 />
-                <Textarea
-                  value={noteContent}
-                  onChange={(event) => setNoteContent(event.target.value)}
-                  placeholder="محتوى الملاحظة"
-                  rows={5}
-                />
-                <Button type="submit" disabled={loading}>
+                
+                <div className="relative">
+                  <div className="absolute left-2 top-2 z-10">
+                    <Button 
+                      type="button"
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-8 gap-1.5 text-xs font-bold text-purple-600 hover:text-purple-700 hover:bg-purple-100 bg-purple-50/50 dark:bg-purple-900/30 dark:text-purple-400 dark:hover:bg-purple-900/50 border border-purple-100 dark:border-purple-800 rounded-full"
+                      onClick={generateWithAI}
+                      disabled={aiLoading}
+                    >
+                      {aiLoading ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3 w-3" />
+                      )}
+                      اكتب بالذكاء الاصطناعي
+                    </Button>
+                  </div>
+                  <Textarea
+                    value={noteContent}
+                    onChange={(event) => setNoteContent(event.target.value)}
+                    placeholder="محتوى الملاحظة أو فكرة ليقوم الذكاء الاصطناعي بتطويرها..."
+                    rows={8}
+                    className="pt-12 resize-none"
+                  />
+                </div>
+                
+                <Button type="submit" disabled={loading} className="w-full sm:w-auto">
                   حفظ الملاحظة
                 </Button>
               </form>
