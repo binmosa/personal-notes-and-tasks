@@ -91,7 +91,7 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-8">
+    <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-8 md:px-8">
       <Card className="mb-6">
         <CardHeader className="gap-2">
           <CardTitle className="text-2xl">تطبيقي مهامي</CardTitle>
@@ -213,6 +213,6 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
           </Card>
         </TabsContent>
       </Tabs>
-    </main>
+    </div>
   );
 }
