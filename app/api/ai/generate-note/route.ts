@@ -8,45 +8,59 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
     }
 
-    const apiKey = process.env.KIMI_API_KEY;
+    const apiKey = process.env.GEMINI_API_KEY?.trim();
 
     if (!apiKey) {
       return NextResponse.json(
-        { error: "Kimi API Key not found. Please add KIMI_API_KEY to your .env.local file." },
+        { error: "Gemini API Key not found. Please add GEMINI_API_KEY to your .env.local file." },
         { status: 500 }
       );
     }
 
-    const response = await fetch("https://api.moonshot.cn/v1/chat/completions", {
+    // Google Gemini API endpoint
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+
+    const response = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "moonshot-v1-8k",
-        messages: [
+        contents: [
           {
-            role: "system",
-            content: "أنت مساعد ذكي متخصص في كتابة وتحسين الملاحظات الشخصية باللغة العربية. اجعل الملاحظات منظمة، واضحة، ومفيدة.",
-          },
-          {
-            role: "user",
-            content: `قم بكتابة ملاحظة مفصلة بناءً على هذا العنوان أو الفكرة: ${prompt}`,
+            parts: [
+              {
+                text: `أنت مساعد ذكي متخصص في كتابة وتحسين الملاحظات الشخصية باللغة العربية. اجعل الملاحظات منظمة، واضحة، ومفيدة. قم بكتابة ملاحظة مفصلة بناءً على هذا العنوان أو الفكرة: ${prompt}`,
+              },
+            ],
           },
         ],
-        temperature: 0.7,
+        generationConfig: {
+          temperature: 0.7,
+          topK: 40,
+          topP: 0.95,
+          maxOutputTokens: 1024,
+        },
       }),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("Kimi API Error:", data);
-      return NextResponse.json({ error: data.error?.message || "Failed to generate note" }, { status: response.status });
+      console.error("Gemini API Error:", data);
+      return NextResponse.json(
+        { error: data.error?.message || "Failed to generate note" },
+        { status: response.status }
+      );
     }
 
-    const aiContent = data.choices[0].message.content;
+    // Extract text from Gemini response structure
+    const aiContent = data.candidates?.[0]?.content?.parts?.[0]?.text;
+    
+    if (!aiContent) {
+      return NextResponse.json({ error: "No content generated" }, { status: 500 });
+    }
+
     return NextResponse.json({ content: aiContent });
   } catch (error) {
     console.error("AI Route Error:", error);
