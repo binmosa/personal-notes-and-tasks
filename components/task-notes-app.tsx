@@ -12,7 +12,9 @@ import {
   CheckCircle2, 
   ClipboardList, 
   FileText, 
-  Clock 
+  Clock,
+  Sparkles,
+  Loader2
 } from "lucide-react";
 
 type Props = {
@@ -27,6 +29,7 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
   const [noteTitle, setNoteTitle] = useState("");
   const [noteContent, setNoteContent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("tasks");
 
   const completedCount = useMemo(
@@ -46,6 +49,35 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
     const data = (await response.json()) as { tasks: TaskItem[]; notes: NoteItem[] };
     setTasks(data.tasks ?? []);
     setNotes(data.notes ?? []);
+  }
+
+  async function generateWithAI() {
+    const prompt = noteTitle || noteContent;
+    if (!prompt.trim()) {
+      alert("يرجى كتابة عنوان أو فكرة للملاحظة أولاً.");
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      const response = await fetch("/api/ai/generate-note", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+
+      const data = await response.json();
+      if (data.content) {
+        setNoteContent(data.content);
+      } else if (data.error) {
+        alert(`خطأ: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("AI Generation Error:", error);
+      alert("فشل الاتصال بالذكاء الاصطناعي.");
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function createTask(event: FormEvent<HTMLFormElement>) {
@@ -237,8 +269,22 @@ export function TaskNotesApp({ initialTasks, initialNotes }: Props) {
 
         <TabsContent value="notes">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <CardTitle>إضافة ملاحظة جديدة</CardTitle>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 text-purple-600 border-purple-200 bg-purple-50 hover:bg-purple-100 dark:bg-purple-900/20 dark:border-purple-800 dark:text-purple-400"
+                onClick={generateWithAI}
+                disabled={aiLoading}
+              >
+                {aiLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Sparkles className="h-4 w-4" />
+                )}
+                كتابة بالذكاء الاصطناعي
+              </Button>
             </CardHeader>
             <CardContent className="space-y-4">
               <form onSubmit={createNote} className="space-y-3">
